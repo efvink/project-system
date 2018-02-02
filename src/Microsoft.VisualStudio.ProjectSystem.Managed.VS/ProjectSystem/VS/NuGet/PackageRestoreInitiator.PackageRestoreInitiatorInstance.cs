@@ -28,6 +28,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.VS.NuGet
             private readonly IProjectLogger _logger;
             private IDisposable _configurationsSubscription;
             private DisposableBag _designTimeBuildSubscriptionLink;
+            private bool _isFirstNomination = true;
 
             private static ImmutableHashSet<string> s_designTimeBuildWatchedRules = Empty.OrdinalIgnoreCaseStringSet
                 .Add(NuGetRestore.SchemaName)
@@ -138,7 +139,8 @@ namespace Microsoft.VisualStudio.ProjectSystem.VS.NuGet
 
             private void NominateProject(ImmutableList<IProjectValueVersions> sources)
             {
-                IVsProjectRestoreInfo projectRestoreInfo = ProjectRestoreInfoBuilder.Build(sources, _projectVsServices.Project);
+                IVsProjectRestoreInfo projectRestoreInfo = ProjectRestoreInfoBuilder.Build(sources, _projectVsServices.Project, _isFirstNomination);
+                _isFirstNomination = false;
 
                 if (projectRestoreInfo != null)
                 {
